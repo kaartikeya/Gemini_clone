@@ -1,10 +1,13 @@
-import {
-  GoogleGenerativeAI,
-  HarmCategory,
-  HarmBlockThreshold,
-} from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const apiKey = "AIzaSyA42rap6wPKpveYBA_-A0u_5IfWAdjsQj0";
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+// Debugging: Check if API key is loaded correctly (REMOVE in production)
+console.log("Loaded API Key:", apiKey);
+
+if (!apiKey) {
+  throw new Error("Missing API key! Please check your .env file.");
+}
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
@@ -15,7 +18,7 @@ const generationConfig = {
   temperature: 1,
   topP: 0.95,
   topK: 40,
-  maxOutputTokens: 8192,
+  maxOutputTokens: 1024,
   responseMimeType: "text/plain",
 };
 
@@ -26,6 +29,7 @@ async function run(prompt) {
   });
 
   const result = await chatSession.sendMessage(prompt);
+  console.log(result);
   const response = result.response;
   console.log(result.response.text());
   return response.text();
